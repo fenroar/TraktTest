@@ -1,0 +1,6 @@
+framework module Pods_TraktTestTests {
+  umbrella header "Pods-TraktTestTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

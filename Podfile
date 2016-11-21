@@ -8,4 +8,8 @@ target 'TraktTest' do
     pod 'ObjectMapper', '~> 2.2'
     pod 'Alamofire', '~> 4.0.0'
     pod 'AlamofireImage', '~> 3.1'
+
+    target 'TraktTestTests' do
+	inherit! :search_paths
+    end
 end
