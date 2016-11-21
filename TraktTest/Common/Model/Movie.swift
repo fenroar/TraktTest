@@ -13,40 +13,43 @@ struct Movie: Mappable {
     
     var title: String?
     var year: Int?
-    var ids: Ids
+    var trakt: Int?
+    var slug: String?
+    var imdbID: String?
+    var tmdbID: Int?
+    
+    // Full movie details
+    var tag: String?
+    var overview: String?
+    var released: String?
+    var runtime: Int?
+    var trailer: String?
+    var homepage: String?
+    var rating: Double?
+    var votes: Int?
+    var certification: String?
     
     init?(map: Map) {
-        ids = Ids()
+        
     }
     
     mutating func mapping(map: Map) {
         
         title           <- map["title"]
         year            <- map["year"]
-        ids             <- map["ids"]
-    }
-}
-
-struct Ids: Mappable {
-    
-    var trakt: Int?
-    var slug: String?
-    var imdbID: String?
-    var tmdbID: Int?
-    
-    init() {
+        trakt           <- map["ids.trakt"]
+        slug            <- map["ids.slug"]
+        imdbID          <- map["ids.imdb"]
+        tmdbID          <- map["ids.tmdb"]
         
-    }
-    
-    init?(map: Map) {
-        
-    }
-    
-    mutating func mapping(map: Map) {
-        
-        trakt           <- map["trakt"]
-        slug            <- map["slug"]
-        imdbID          <- map["imdb"]
-        tmdbID          <- map["tmdb"]
+        tag             <- map["tag"]
+        overview        <- map["overview"]
+        released        <- map["released"]
+        runtime         <- map["runtime"]
+        trailer         <- map["trailer"]
+        homepage        <- map["homepage"]
+        rating          <- map["rating"]
+        votes           <- map["votes"]
+        certification   <- map["certification"]
     }
 }

@@ -23,10 +23,10 @@ class MovieTests: XCTestCase {
         XCTAssertTrue(firstMovie?.watchers! == 1)
         XCTAssertTrue(firstMovie?.movie?.title! == "Movie 1")
         XCTAssertTrue(firstMovie?.movie?.year! == 2016)
-        XCTAssertTrue(firstMovie?.movie?.ids.imdbID! == "imdbID")
-        XCTAssertTrue(firstMovie?.movie?.ids.slug! == "Movie 1 slug")
-        XCTAssertTrue(firstMovie?.movie?.ids.tmdbID! == 123456)
-        XCTAssertTrue(firstMovie?.movie?.ids.trakt! == 654321)
+        XCTAssertTrue(firstMovie?.movie?.imdbID == "imdbID")
+        XCTAssertTrue(firstMovie?.movie?.slug! == "Movie 1 slug")
+        XCTAssertTrue(firstMovie?.movie?.tmdbID! == 123456)
+        XCTAssertTrue(firstMovie?.movie?.trakt! == 654321)
     }
     
     func trendingMovieJSON() -> [[String: Any]] {
@@ -36,21 +36,21 @@ class MovieTests: XCTestCase {
                                      "slug" : "Movie 1 slug",
                                      "tmdb" : 123456,
                                      "trakt": 654321 ]],
-                "watchers" : 1]]
+                 "watchers" : 1]]
     }
     
     func testFetchTrendingWithExpection() {
         
         let expect = expectation(description: "Should fetch trending movies")
         
-        APIClient.shared.service(MovieService.trending(), success: { response in
+        APIClient.shared.paginatedService(MovieService.trending(page: 1), success: { response, count in
             
             let trendingMovies = Mapper<TrendingMovie>().mapArray(JSONObject: response)
             XCTAssertNotNil(trendingMovies, "Failed to map response")
             
             expect.fulfill()
             
-        }) { (statusCode, error, responseBody) in
+        }) { statusCode, error, responseBody in
             XCTFail("API call failed: \(error?.localizedDescription)")
         }
         

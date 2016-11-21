@@ -29,13 +29,10 @@ class TMDBImageRequest {
             self.fetchImagesForTMDB(identifier: id, completion: completion)
         }
         
-        // if
         if let images = imagesCache[TMDBId] {
             
             if images.backdrops.count > 0 || images.posters.count > 0 {
                 completion(images)
-            } else {
-                print("Fetching?")
             }
         } else {
             testAction(TMDBId, completion)

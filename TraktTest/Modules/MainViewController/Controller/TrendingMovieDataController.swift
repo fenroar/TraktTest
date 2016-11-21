@@ -8,14 +8,13 @@
 
 import UIKit
 import Alamofire
-import AlamofireImage
 import ObjectMapper
 
 protocol TrendingMovieDataControllerDelegate: class {
     
     func trendingMovieDataControllerDataDidChange(_ dataController: TrendingMovieDataController)
     
-    func trendingMovieDataController(_ dataController: TrendingMovieDataController, didSelectMovie movie: TrendingMovie)
+    func trendingMovieDataController(_ dataController: TrendingMovieDataController, didSelectMovie movie: Movie)
 }
 
 private enum TrendingMovieConstants {
@@ -40,10 +39,6 @@ class TrendingMovieDataController: NSObject {
     
     var trendingMovies: [TrendingMovie] = []
     var currentPage = TrendingMovieConstants.defaultPage
-    let downloader = ImageDownloader(configuration: ImageDownloader.defaultURLSessionConfiguration(),
-                                     downloadPrioritization: .fifo,
-                                     maximumActiveDownloads: 4,
-                                     imageCache: AutoPurgingImageCache())
     
     private var isFetching: FetchState = .none
     
@@ -73,7 +68,7 @@ class TrendingMovieDataController: NSObject {
         
         let service = MovieService.trending(page: currentPage)
         
-        APIClient.shared.service(service, afterAction: { [weak self] in
+        APIClient.shared.paginatedService(service, afterAction: { [weak self] in
             
             guard let strongSelf = self else {
                 return
@@ -135,38 +130,14 @@ extension TrendingMovieDataController: UITableViewDelegate, UITableViewDataSourc
         
         let trendingMovie = trendingMovies[indexPath.row]
         
-        if let TMDBIdentifier = trendingMovie.movie?.ids.tmdbID {
+        if let TMDBIdentifier = trendingMovie.movie?.tmdbID {
             
             cell.movieImageView.image = nil
             
-            TMDBImageRequest.shared.requestForTMDBId(TMDBIdentifier) { [weak self] container in
-                // Get first image in backdrop
-                if let filePath = container.backdrops.first?.file_path {
-
-                    if let backdropImage = ImageCache.shared.cachedImageFor(key: filePath) {
-                        
-                        cell.movieImageView.image = backdropImage
-                    } else {
-                        
-                        cell.movieImageView.image = nil
-                        
-                        if let imageURL = URL(string: TMDBConfiguration.imageURL + filePath) {
-                            let request = URLRequest(url: imageURL)
-                            
-                            self?.downloader.download(request, completion: { response in
-                                
-                                if let image = response.result.value {
-                                    // Cache the image
-                                    ImageCache.shared.cacheImage(image: image, key: filePath)
-                                    cell.movieImageView.image = image
-                                }
-                            })
-                        }
-                    }
-                } else {
-                    cell.movieImageView.image = nil
-                }
-            }
+            ImageCache.shared.downloadBackdropImageFor(TMDBIdentifier, completion: { image in
+                cell.movieImageView.image = image
+            })
+            
         } else {
             cell.movieImageView.image = nil
         }
@@ -190,7 +161,10 @@ extension TrendingMovieDataController: UITableViewDelegate, UITableViewDataSourc
         tableView.deselectRow(at: indexPath, animated: true)
         
         let trendingMovie = trendingMovies[indexPath.row]
-        self.delegate?.trendingMovieDataController(self, didSelectMovie: trendingMovie)
+        
+        if let movie = trendingMovie.movie {
+            self.delegate?.trendingMovieDataController(self, didSelectMovie: movie)
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

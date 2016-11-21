@@ -10,7 +10,8 @@ import Foundation
 import Alamofire
 
 typealias Action = () -> ()
-typealias SuccessAction = (_ response: Any, _ pageCount: Int) -> ()
+typealias SuccessAction = (_ response: Any) -> ()
+typealias SuccessPaginatedAction = (_ response: Any, _ pageCount: Int) -> ()
 typealias FailureAction = (_ statusCode: Int, _ error: Error?, _ responseBody: [String : AnyObject]?) -> ()
 
 public enum APIError: Error {
@@ -22,10 +23,44 @@ final class APIClient {
     public static let shared = APIClient()
     
     public func service(_ service: URLRequestConvertible,
-                        beforeAction: Action? = nil,
-                        afterAction: Action? = nil,
-                        success: @escaping SuccessAction,
-                        failure: @escaping FailureAction) {
+                                 beforeAction: Action? = nil,
+                                 afterAction: Action? = nil,
+                                 success: @escaping SuccessAction,
+                                 failure: @escaping FailureAction) {
+        
+        if let before = beforeAction {
+            before()
+        }
+        
+        Alamofire.request(service).responseJSON { response in
+            
+            defer {
+                
+                if let after = afterAction {
+                    after()
+                }
+            }
+            
+            switch response.result {
+            case .success(let value):
+                
+                success(value)
+                
+            case .failure(let error):
+                
+                let statusCode = self.statusCodeFor(response)
+                let responseBody = response.data?.serializeJSONToDictionary()
+                
+                failure(statusCode, error, responseBody)
+            }
+        }
+    }
+    
+    public func paginatedService(_ service: URLRequestConvertible,
+                                 beforeAction: Action? = nil,
+                                 afterAction: Action? = nil,
+                                 success: @escaping SuccessPaginatedAction,
+                                 failure: @escaping FailureAction) {
         
         if let before = beforeAction {
             before()

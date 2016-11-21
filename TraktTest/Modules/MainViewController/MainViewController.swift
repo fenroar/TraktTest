@@ -57,6 +57,11 @@ public class MainViewController: UIViewController {
         tableView.addSubview(refreshControl)
     }
     
+    func openDetailsForMovie(_ traktID: Int) {
+        
+        let detailsViewController = MovieDetailViewController(movieId: traktID)
+        self.navigationController?.pushViewController(detailsViewController, animated: true)
+    }
 }
 
 extension MainViewController: UIViewControllerPreviewingDelegate {
@@ -65,8 +70,10 @@ extension MainViewController: UIViewControllerPreviewingDelegate {
         
         if let indexPath = tableView.indexPathForRow(at: location) {
             
-            let movie = dataController.trendingMovies[indexPath.row]
-            return nil
+            let trendingMovie = dataController.trendingMovies[indexPath.row]
+            if let movieTraktID = trendingMovie.movie?.trakt {
+                openDetailsForMovie(movieTraktID)
+            }
         }
         
         return nil
@@ -89,7 +96,11 @@ extension MainViewController: TrendingMovieDataControllerDelegate {
         tableView.reloadData()
     }
     
-    func trendingMovieDataController(_ dataController: TrendingMovieDataController, didSelectMovie movie: TrendingMovie) {
+    func trendingMovieDataController(_ dataController: TrendingMovieDataController, didSelectMovie movie: Movie) {
         // TODO:
+        if let movieTraktID = movie.trakt {
+            openDetailsForMovie(movieTraktID)
+        }
+        
     }
 }
