@@ -12,6 +12,10 @@ import ObjectMapper
 class ViewController: UIViewController {
 
     var trendingMovies: [TrendingMovie] = []
+    var currentPage = 1
+    
+    @IBOutlet weak var displayLabel: UILabel!
+    @IBOutlet weak var nextPageButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,28 +25,8 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        
-        APIClient.shared.service(MovieService.trending(), beforeAction: {
-            
-            print("Before")
-            
-        }, afterAction: {
-            
-            print("After")
-        }, success: {  [weak self] response in
-            print(response)
-            guard let strongSelf = self else {
-                return
-            }
-            
-            if let trendingMovies = Mapper<TrendingMovie>().mapArray(JSONObject: response) {
-                strongSelf.trendingMovies = trendingMovies
-            }
-            
-        }) { statusCode, error, responseBody in
-            
-            print(responseBody)
-        }
+        updateLabel()
+        fetchTrending()
     }
 
     override func didReceiveMemoryWarning() {
@@ -51,5 +35,41 @@ class ViewController: UIViewController {
     }
 
 
+    @IBAction func handleNextPageTap(_ sender: Any) {
+        
+        fetchTrending()
+    }
+    
+    func updateLabel() {
+        displayLabel.text = "Fetched \(trendingMovies.count) movies"
+    }
+    
+    public func fetchTrending() {
+        
+        APIClient.shared.service(MovieService.trending(page: currentPage), beforeAction: {
+            
+            self.nextPageButton.isEnabled = false
+            
+        }, afterAction: {
+            
+            self.nextPageButton.isEnabled = true
+            self.updateLabel()
+            
+        }, success: {  [weak self] response, count in
+            print(response)
+            guard let strongSelf = self else {
+                return
+            }
+            
+            if let trendingMovies = Mapper<TrendingMovie>().mapArray(JSONObject: response) {
+                strongSelf.trendingMovies.append(contentsOf: trendingMovies)
+                strongSelf.currentPage += 1
+            }
+            
+        }) { statusCode, error, responseBody in
+            
+            print(responseBody)
+        }
+    }
 }
 

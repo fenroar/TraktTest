@@ -13,13 +13,13 @@ public enum MovieService: URLRequestConvertible {
     
     private static let rootPath = "movies/"
     
-    case trending()
+    case trending(page: Int)
     
-    private var requestProperties: (method: Alamofire.HTTPMethod, path: String, parameters: [String:AnyObject]) {
+    private var requestProperties: (method: Alamofire.HTTPMethod, path: String, parameters: [String: Any]) {
         
         switch self {
-        case .trending():
-            return (.get, "trending", [:])
+        case .trending(let page):
+            return (.get, "trending", ["page": page])
         }
     }
     

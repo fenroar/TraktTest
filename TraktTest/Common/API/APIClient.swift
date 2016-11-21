@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 typealias Action = () -> ()
-typealias SuccessAction = (_ response: Any) -> ()
+typealias SuccessAction = (_ response: Any, _ pageCount: Int) -> ()
 typealias FailureAction = (_ statusCode: Int, _ error: Error?, _ responseBody: [String : AnyObject]?) -> ()
 
 public enum APIError: Error {
@@ -43,7 +43,13 @@ final class APIClient {
             switch response.result {
             case .success(let value):
                 
-                success(value)
+                var pageCount = 0
+                if let headerFields = response.response?.allHeaderFields,
+                    let count = headerFields["x-pagination-page-count"] as? String {
+                    pageCount = Int(count) ?? pageCount
+                }
+                
+                success(value, pageCount)
                 
             case .failure(let error):
                 
