@@ -1,3 +1,4 @@
+
 //
 //  ImageCache.swift
 //  TraktTest
@@ -44,7 +45,8 @@ class ImageCache {
     private func downloadImageFor(_ tmdbID: Int, isBackdrop: Bool, completion: @escaping (_ image: UIImage?) -> ()) {
         
         TMDBImageRequest.shared.requestForTMDBId(tmdbID) { [weak self] container in
-            // Get first image in backdrop
+            
+            // Get first image in backdrop or poster
             if let backdropFilePath = container.backdrops.first?.file_path,
                 let posterFilePath = container.posters.first?.file_path {
                 

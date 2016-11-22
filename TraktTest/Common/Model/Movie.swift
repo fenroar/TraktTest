@@ -19,7 +19,7 @@ struct Movie: Mappable {
     var tmdbID: Int?
     
     // Full movie details
-    var tag: String?
+    var tagline: String?
     var overview: String?
     var released: String?
     var runtime: Int?
@@ -28,6 +28,7 @@ struct Movie: Mappable {
     var rating: Double?
     var votes: Int?
     var certification: String?
+    var genres: [String]?
     
     init?(map: Map) {
         
@@ -42,7 +43,7 @@ struct Movie: Mappable {
         imdbID          <- map["ids.imdb"]
         tmdbID          <- map["ids.tmdb"]
         
-        tag             <- map["tag"]
+        tagline             <- map["tagline"]
         overview        <- map["overview"]
         released        <- map["released"]
         runtime         <- map["runtime"]
@@ -51,5 +52,21 @@ struct Movie: Mappable {
         rating          <- map["rating"]
         votes           <- map["votes"]
         certification   <- map["certification"]
+        genres          <- map["genres"]
+    }
+}
+
+extension Movie {
+    
+    func displayGenres() -> String {
+        var displayText = ""
+        
+        if let genres = self.genres {
+            for genre in genres {
+                displayText.appendText(genre, separator: ", ")
+            }
+        }
+        
+        return displayText
     }
 }

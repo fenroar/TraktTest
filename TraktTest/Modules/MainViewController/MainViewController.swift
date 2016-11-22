@@ -31,13 +31,13 @@ public class MainViewController: UIViewController {
         super.viewDidAppear(animated)
         
         if dataController.trendingMovies.count == 0 {
-            fetchData()
+            refreshData()
         }
     }
     
-    func fetchData() {
+    func refreshData(completion: (() -> ())? = nil) {
         
-        dataController.fetchDataFromBeginning()
+        dataController.fetchDataFromBeginning(completion: completion)
     }
     
     func setupTableView() {
@@ -53,13 +53,13 @@ public class MainViewController: UIViewController {
         dataController.delegate = self
         
         refreshControl.backgroundColor = .black
-        refreshControl.addTarget(self, action: #selector(self.fetchData), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(self.refreshData), for: .valueChanged)
         tableView.addSubview(refreshControl)
     }
     
-    func openDetailsForMovie(_ traktID: Int) {
-        
-        let detailsViewController = MovieDetailViewController(movieId: traktID)
+    func openDetailsFor(_ movie: Movie) {
+    
+        let detailsViewController = MovieDetailViewController(movie: movie)
         self.navigationController?.pushViewController(detailsViewController, animated: true)
     }
 }
@@ -71,8 +71,8 @@ extension MainViewController: UIViewControllerPreviewingDelegate {
         if let indexPath = tableView.indexPathForRow(at: location) {
             
             let trendingMovie = dataController.trendingMovies[indexPath.row]
-            if let movieTraktID = trendingMovie.movie?.trakt {
-                openDetailsForMovie(movieTraktID)
+            if let movie = trendingMovie.movie {
+                return MovieDetailViewController(movie: movie)
             }
         }
         
@@ -97,10 +97,7 @@ extension MainViewController: TrendingMovieDataControllerDelegate {
     }
     
     func trendingMovieDataController(_ dataController: TrendingMovieDataController, didSelectMovie movie: Movie) {
-        // TODO:
-        if let movieTraktID = movie.trakt {
-            openDetailsForMovie(movieTraktID)
-        }
         
+        openDetailsFor(movie)
     }
 }

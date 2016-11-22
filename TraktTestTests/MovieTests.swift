@@ -29,14 +29,20 @@ class MovieTests: XCTestCase {
         XCTAssertTrue(firstMovie?.movie?.trakt! == 654321)
     }
     
-    func trendingMovieJSON() -> [[String: Any]] {
-        return [["movie" : ["title": "Movie 1",
-                            "year" : 2016,
-                            "ids" : ["imdb" : "imdbID",
-                                     "slug" : "Movie 1 slug",
-                                     "tmdb" : 123456,
-                                     "trakt": 654321 ]],
-                 "watchers" : 1]]
+    func testGenre() {
+        
+        var movie = Movie(JSON: [:])
+        movie?.genres = []
+        
+        XCTAssertTrue(movie?.displayGenres() == "")
+        
+        movie?.genres = ["action"]
+        XCTAssertTrue(movie?.displayGenres() == "action")
+        
+        movie?.genres?.append("thriller")
+        XCTAssertTrue(movie?.displayGenres() == "action, thriller")
+        XCTAssertFalse(movie?.displayGenres() == "action thriller")
+        XCTAssertFalse(movie?.displayGenres() == "actionthriller")
     }
     
     func testFetchTrendingWithExpection() {
@@ -57,6 +63,16 @@ class MovieTests: XCTestCase {
         waitForExpectations(timeout: APIConfiguration.timeoutInterval) { error in
             XCTAssertNil(error, "Test timed out. \(error?.localizedDescription)")
         }
+    }
+    
+    private func trendingMovieJSON() -> [[String: Any]] {
+        return [["movie" : ["title": "Movie 1",
+                            "year" : 2016,
+                            "ids" : ["imdb" : "imdbID",
+                                     "slug" : "Movie 1 slug",
+                                     "tmdb" : 123456,
+                                     "trakt": 654321 ]],
+                 "watchers" : 1]]
     }
     
 }

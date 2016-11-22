@@ -42,7 +42,7 @@ class TrendingMovieDataController: NSObject {
     
     private var isFetching: FetchState = .none
     
-    public func fetchDataFromBeginning() {
+    public func fetchDataFromBeginning(completion: (() -> ())? = nil) {
         
         currentPage = TrendingMovieConstants.defaultPage
         isFetching = .none
@@ -50,11 +50,11 @@ class TrendingMovieDataController: NSObject {
         fetchDataForCurrentPage()
     }
     
-    fileprivate func fetchDataForCurrentPage() {
+    fileprivate func fetchDataForCurrentPage(completion: (() -> ())? = nil) {
         
         switch isFetching {
         case .none:
-            performFetch()
+            performFetch(completion: completion)
         case .complete:
             print("Finished fetching everything")
         default:
@@ -62,7 +62,7 @@ class TrendingMovieDataController: NSObject {
         }
     }
     
-    private func performFetch() {
+    private func performFetch(completion: (() -> ())? = nil) {
         
         isFetching = .fetching
         
@@ -76,6 +76,10 @@ class TrendingMovieDataController: NSObject {
             
             if strongSelf.isFetching != .complete {
                 strongSelf.isFetching = .none
+            }
+            
+            if let completion = completion {
+                completion()
             }
             
             }, success: { [weak self] response, count in
@@ -102,8 +106,6 @@ class TrendingMovieDataController: NSObject {
                 }
                 
         }) { [weak self] statusCode, error, responseBody in
-            
-            print("\(statusCode) - \(responseBody)")
             
             guard let strongSelf = self else {
                 return
@@ -148,8 +150,6 @@ extension TrendingMovieDataController: UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
-        print(indexPath.row)
         
         if indexPath.row == trendingMovies.count - 1 {
             fetchDataForCurrentPage()
