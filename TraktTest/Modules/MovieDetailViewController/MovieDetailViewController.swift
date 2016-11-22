@@ -18,12 +18,9 @@ final class MovieDetailViewController: UIViewController {
     @IBOutlet weak var informationLabel: UILabel!
     @IBOutlet weak var tagLineLabel: UILabel!
     @IBOutlet weak var summaryLabel: UILabel!
-    @IBOutlet weak var castCrewButton: UIButton!
     @IBOutlet weak var posterIndicatorView: UIActivityIndicatorView!
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var imageFailureView: UIView!
-    
-    var casts: [Cast] = []
     
     init(movie: Movie) {
         self.movieId = movie.trakt!
@@ -51,7 +48,6 @@ final class MovieDetailViewController: UIViewController {
     func loadInformation() {
         
         loadDetails()
-        loadPeople()
     }
     
     func loadDetails() {
@@ -70,27 +66,6 @@ final class MovieDetailViewController: UIViewController {
             })
         }
     }
-    
-    func loadPeople() {
-        
-        let service = MovieService.people(movieID: movieId)
-        
-        APIClient.shared.service(service, success: { [weak self] response in
-            
-            if let responseDictionary = response as? Dictionary<String, Any>, let casts = responseDictionary["cast"] {
-                
-                if let people = Mapper<Cast>().mapArray(JSONObject: casts) {
-                    self?.casts = people
-                }
-                
-                self?.castCrewButton.isHidden = self?.casts.count == 0
-            }
-            
-        }, failure: { statusCode, error, responseBody in
-            
-            print(error?.localizedDescription ?? "Unknown error")
-        })
-    }
 }
 
 extension MovieDetailViewController {
@@ -101,7 +76,6 @@ extension MovieDetailViewController {
         imageFailureView.layer.borderWidth = 2.0
         imageFailureView.layer.borderColor = UIColor.white.cgColor
         
-        castCrewButton.isHidden = casts.count == 0
         title = movie.title ?? "Movie Details"
         summaryLabel.text = movie.overview! + movie.overview! // ?? ""
         tagLineLabel.text = movie.tagline ?? ""
