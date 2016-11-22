@@ -14,8 +14,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MovieDetailViewController" customModule="TraktTest" customModuleProvider="target">
             <connections>
                 <outlet property="castCrewButton" destination="pbo-vv-dMa" id="hcM-vz-cvJ"/>
+                <outlet property="imageFailureView" destination="7IW-YD-Qk2" id="iYC-BT-gPy"/>
                 <outlet property="informationLabel" destination="WjG-xs-Lgp" id="3fV-cI-wGI"/>
                 <outlet property="posterImageView" destination="3Tf-Ev-PaY" id="Prw-hQ-jZW"/>
+                <outlet property="posterIndicatorView" destination="01r-Ll-tqP" id="sOa-bh-yjZ"/>
                 <outlet property="summaryLabel" destination="Vp9-dW-4Sx" id="Ufj-5p-wUx"/>
                 <outlet property="tagLineLabel" destination="fs2-bT-cv2" id="Cbq-gl-Hvb"/>
                 <outlet property="view" destination="DB9-3r-04s" id="kum-Kq-gmz"/>
@@ -32,7 +34,7 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qFP-FK-TV6">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="361"/>
                             <subviews>
-                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="01r-Ll-tqP">
+                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="01r-Ll-tqP">
                                     <rect key="frame" x="75" y="107.5" width="20" height="20"/>
                                 </activityIndicatorView>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Tf-Ev-PaY">
@@ -41,6 +43,24 @@
                                         <constraint firstAttribute="width" secondItem="3Tf-Ev-PaY" secondAttribute="height" multiplier="7:10" id="neP-Tl-WAG"/>
                                     </constraints>
                                 </imageView>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7IW-YD-Qk2">
+                                    <rect key="frame" x="10" y="10" width="150" height="214.5"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Couldn't download image" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="X8N-od-peH">
+                                            <rect key="frame" x="10" y="10" width="130" height="194.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="X8N-od-peH" secondAttribute="trailing" constant="10" id="OOc-2A-GFv"/>
+                                        <constraint firstItem="X8N-od-peH" firstAttribute="top" secondItem="7IW-YD-Qk2" secondAttribute="top" constant="10" id="OqB-CH-zRF"/>
+                                        <constraint firstAttribute="bottom" secondItem="X8N-od-peH" secondAttribute="bottom" constant="10" id="a0y-je-Vps"/>
+                                        <constraint firstItem="X8N-od-peH" firstAttribute="leading" secondItem="7IW-YD-Qk2" secondAttribute="leading" constant="10" id="epn-NL-TFu"/>
+                                    </constraints>
+                                </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Information" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l6d-Nl-OKP" userLabel="Information Title">
                                     <rect key="frame" x="168" y="10" width="197" height="24"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
@@ -92,6 +112,7 @@ Morbi suscipit maximus urna, ac ullamcorper mi pellentesque non. Donec id sem no
                                 <constraint firstItem="3Tf-Ev-PaY" firstAttribute="width" secondItem="qFP-FK-TV6" secondAttribute="width" multiplier="0.4" id="H3N-qw-Mof"/>
                                 <constraint firstItem="fs2-bT-cv2" firstAttribute="leading" secondItem="qFP-FK-TV6" secondAttribute="leading" constant="10" id="KCP-zB-WFa"/>
                                 <constraint firstAttribute="bottom" secondItem="pbo-vv-dMa" secondAttribute="bottom" constant="16" id="LT8-ck-YoD"/>
+                                <constraint firstItem="7IW-YD-Qk2" firstAttribute="leading" secondItem="3Tf-Ev-PaY" secondAttribute="leading" id="MXP-ZU-XwP"/>
                                 <constraint firstItem="Vp9-dW-4Sx" firstAttribute="leading" secondItem="qFP-FK-TV6" secondAttribute="leading" constant="10" id="O9c-wR-7Ws"/>
                                 <constraint firstAttribute="trailing" secondItem="pbo-vv-dMa" secondAttribute="trailing" constant="10" id="OEp-1J-KgN"/>
                                 <constraint firstAttribute="trailing" secondItem="Vp9-dW-4Sx" secondAttribute="trailing" constant="10" id="Py0-dH-otb"/>
@@ -101,9 +122,12 @@ Morbi suscipit maximus urna, ac ullamcorper mi pellentesque non. Donec id sem no
                                 <constraint firstAttribute="trailing" secondItem="fs2-bT-cv2" secondAttribute="trailing" constant="10" id="lWx-1f-6Vh"/>
                                 <constraint firstItem="l6d-Nl-OKP" firstAttribute="top" secondItem="3Tf-Ev-PaY" secondAttribute="top" id="mqf-p5-pS7"/>
                                 <constraint firstItem="l6d-Nl-OKP" firstAttribute="leading" secondItem="3Tf-Ev-PaY" secondAttribute="trailing" constant="8" id="nHj-zD-Oaq"/>
+                                <constraint firstItem="7IW-YD-Qk2" firstAttribute="trailing" secondItem="3Tf-Ev-PaY" secondAttribute="trailing" id="o2x-tX-X9K"/>
+                                <constraint firstItem="7IW-YD-Qk2" firstAttribute="top" secondItem="3Tf-Ev-PaY" secondAttribute="top" id="oS8-nq-jSA"/>
                                 <constraint firstItem="01r-Ll-tqP" firstAttribute="centerY" secondItem="3Tf-Ev-PaY" secondAttribute="centerY" id="pge-l5-P9G"/>
                                 <constraint firstItem="WjG-xs-Lgp" firstAttribute="top" secondItem="l6d-Nl-OKP" secondAttribute="bottom" constant="10" id="qbH-cY-Rdd"/>
                                 <constraint firstItem="pbo-vv-dMa" firstAttribute="leading" secondItem="qFP-FK-TV6" secondAttribute="leading" constant="10" id="qds-vm-5gu"/>
+                                <constraint firstItem="7IW-YD-Qk2" firstAttribute="bottom" secondItem="3Tf-Ev-PaY" secondAttribute="bottom" id="se3-Yd-VFn"/>
                                 <constraint firstItem="Vp9-dW-4Sx" firstAttribute="top" secondItem="fs2-bT-cv2" secondAttribute="bottom" constant="10" id="u5w-5R-6Dk"/>
                                 <constraint firstItem="3Tf-Ev-PaY" firstAttribute="top" secondItem="qFP-FK-TV6" secondAttribute="top" constant="10" id="w9x-Qc-Ac2"/>
                             </constraints>

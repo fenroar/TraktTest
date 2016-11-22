@@ -69,8 +69,6 @@ class TMDBImageRequest {
     
     private func buildImageRequestURLFor(identifier: Int) -> URL {
         
-        let urlPath = TMDBConfiguration.baseURL + "movie/\(identifier)/images?api_key=" + TMDBConfiguration.apiKey
-        print(urlPath)
-        return URL(string: urlPath)!
+        return URL(string: TMDBConfiguration.baseURL + "movie/\(identifier)/images?api_key=" + TMDBConfiguration.apiKey)!
     }
 }

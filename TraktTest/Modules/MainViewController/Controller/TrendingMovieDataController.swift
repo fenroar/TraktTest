@@ -12,21 +12,16 @@ import ObjectMapper
 
 protocol TrendingMovieDataControllerDelegate: class {
     
+    func trendingMovieDataControllerStateDidChange(_ dataController: TrendingMovieDataController, state: ViewState)
+    
     func trendingMovieDataControllerDataDidChange(_ dataController: TrendingMovieDataController)
     
     func trendingMovieDataController(_ dataController: TrendingMovieDataController, didSelectMovie movie: Movie)
 }
 
-private enum TrendingMovieConstants {
+internal enum TrendingMovieConstants {
     
     static let defaultPage = 1
-}
-
-private enum FetchState {
-    
-    case none
-    case fetching
-    case complete
 }
 
 class TrendingMovieDataController: NSObject {
@@ -40,7 +35,11 @@ class TrendingMovieDataController: NSObject {
     var trendingMovies: [TrendingMovie] = []
     var currentPage = TrendingMovieConstants.defaultPage
     
-    private var isFetching: FetchState = .none
+    fileprivate var isFetching: ViewState = .none {
+        didSet {
+            self.delegate?.trendingMovieDataControllerStateDidChange(self, state: isFetching)
+        }
+    }
     
     public func fetchDataFromBeginning(completion: (() -> ())? = nil) {
         
@@ -55,8 +54,6 @@ class TrendingMovieDataController: NSObject {
         switch isFetching {
         case .none:
             performFetch(completion: completion)
-        case .complete:
-            print("Finished fetching everything")
         default:
             break
         }
@@ -68,15 +65,7 @@ class TrendingMovieDataController: NSObject {
         
         let service = MovieService.trending(page: currentPage)
         
-        APIClient.shared.paginatedService(service, afterAction: { [weak self] in
-            
-            guard let strongSelf = self else {
-                return
-            }
-            
-            if strongSelf.isFetching != .complete {
-                strongSelf.isFetching = .none
-            }
+        APIClient.shared.paginatedService(service, afterAction: {
             
             if let completion = completion {
                 completion()
@@ -86,6 +75,10 @@ class TrendingMovieDataController: NSObject {
                 
                 guard let strongSelf = self else {
                     return
+                }
+                
+                if strongSelf.isFetching == .fetching {
+                    strongSelf.isFetching = .none
                 }
                 
                 if let trendingMovies = Mapper<TrendingMovie>().mapArray(JSONObject: response) {
@@ -112,6 +105,8 @@ class TrendingMovieDataController: NSObject {
             }
             
             strongSelf.delegate?.trendingMovieDataControllerDataDidChange(strongSelf)
+            
+            strongSelf.isFetching = .failure(message: error?.localizedDescription ?? "Unknown error")
         }
     }
     
@@ -169,5 +164,15 @@ extension TrendingMovieDataController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
+    }
+}
+
+extension TrendingMovieDataController: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        if self.isFetching != .fetching {
+            self.isFetching = .none
+        }
     }
 }

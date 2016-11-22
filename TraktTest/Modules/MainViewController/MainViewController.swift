@@ -10,6 +10,7 @@ import UIKit
 
 public class MainViewController: UIViewController {
     
+    @IBOutlet weak var stateView: StateView!
     @IBOutlet weak var tableView: UITableView!
     
     let refreshControl = UIRefreshControl()
@@ -22,7 +23,7 @@ public class MainViewController: UIViewController {
         
         navigationItem.title = NSLocalizedString("Trakt", comment: "Trending Movies - Title")
         
-        setupTableView()
+        setup()
         
         registerForPreviewing(with: self, sourceView: tableView)
     }
@@ -38,6 +39,13 @@ public class MainViewController: UIViewController {
     func refreshData(completion: (() -> ())? = nil) {
         
         dataController.fetchDataFromBeginning(completion: completion)
+    }
+    
+    func setup() {
+        
+        stateView.diplayLabel.textColor = .white
+        
+        setupTableView()
     }
     
     func setupTableView() {
@@ -86,6 +94,30 @@ extension MainViewController: UIViewControllerPreviewingDelegate {
 }
 
 extension MainViewController: TrendingMovieDataControllerDelegate {
+    
+    func trendingMovieDataControllerStateDidChange(_ dataController: TrendingMovieDataController, state: ViewState) {
+        
+        stateView.isHidden = dataController.trendingMovies.count > 0
+        
+        switch state {
+        case .failure(let message):
+            
+            stateView.diplayLabel.text = message
+            
+            if refreshControl.isRefreshing {
+                refreshControl.endRefreshing()
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now(), execute: {
+                if dataController.trendingMovies.count > 0 {
+                    self.presentAlert(title: NSLocalizedString("Oops", comment: "Alert Title"),
+                                 message: message)
+                }
+            })
+        default:
+            break
+        }
+    }
     
     func trendingMovieDataControllerDataDidChange(_ dataController: TrendingMovieDataController) {
         

@@ -32,17 +32,23 @@ class ImageCache {
         return cache.object(forKey: (key as NSString))
     }
     
-    func downloadBackdropImageFor(_ tmdbID: Int, completion: @escaping (_ image: UIImage?) -> ()) {
+    func downloadBackdropImageFor(_ tmdbID: Int, completion: @escaping (_ image: UIImage?) -> (),
+                                  failure: (() -> ())? = nil) {
         
-        self.downloadImageFor(tmdbID, isBackdrop: true, completion: completion)
+        self.downloadImageFor(tmdbID, isBackdrop: true, completion: completion, failure: failure)
     }
     
-    func downloadPosterImageFor(_ tmdbID: Int, completion: @escaping (_ image: UIImage?) -> ()) {
+    func downloadPosterImageFor(_ tmdbID: Int,
+                                completion: @escaping (_ image: UIImage?) -> (),
+                                failure: (() -> ())? = nil) {
         
-        self.downloadImageFor(tmdbID, isBackdrop: false, completion: completion)
+        self.downloadImageFor(tmdbID, isBackdrop: false, completion: completion, failure: failure)
     }
     
-    private func downloadImageFor(_ tmdbID: Int, isBackdrop: Bool, completion: @escaping (_ image: UIImage?) -> ()) {
+    private func downloadImageFor(_ tmdbID: Int,
+                                  isBackdrop: Bool,
+                                  completion: @escaping (_ image: UIImage?) -> (),
+                                  failure: (() -> ())? = nil) {
         
         TMDBImageRequest.shared.requestForTMDBId(tmdbID) { [weak self] container in
             
@@ -70,6 +76,10 @@ class ImageCache {
                                 // Cache the image
                                 ImageCache.shared.cacheImage(image: image, key: filePath)
                                 completion(image)
+                            } else {
+                                if let failure = failure {
+                                    failure()
+                                }
                             }
                         })
                     }
